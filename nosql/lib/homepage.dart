@@ -26,13 +26,14 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   return Container(
                     height: 50,
-                    color: Colors.blueGrey,
-                    margin: new EdgeInsets.symmetric(horizontal: 20.0),
+                    width: 100,
+                    child: Text(index.toString()),
+                    margin: EdgeInsets.symmetric(horizontal: 10),
                   );
                 },
               ),
             ),
-            Text('On va mettre plein de truc là'),
+            Text('On va mettre plein de truc là et ici'),
           ],
         ),
       ),
