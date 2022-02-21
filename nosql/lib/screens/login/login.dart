@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart';
+import '../homepage/homepage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -54,11 +54,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 TextButton(
-                  child: Text("Se connecter"),
+                  child: const Text("Se connecter"),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
+                        const SnackBar(
+                          content: Text('Processing Data'),
+                          duration: Duration(seconds: 2),
+                        ),
                       );
                       Navigator.push(
                         context,
