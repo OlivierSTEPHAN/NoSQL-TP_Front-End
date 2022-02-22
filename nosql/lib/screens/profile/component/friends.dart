@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nosql/components/placeholder.dart';
+import 'package:nosql/request/request.dart';
 
-class Users extends StatelessWidget {
-  const Users({
+class Friends extends StatelessWidget {
+  const Friends({
     Key? key,
   }) : super(key: key);
 
@@ -10,8 +11,8 @@ class Users extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
-      child: FutureBuilder<List<String>>(
-        future: computeData(),
+      child: FutureBuilder<List<dynamic>>(
+        future: getFriends("1"),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ResultListView(snapshot.data!);
@@ -71,7 +72,7 @@ class ResultListView extends StatelessWidget {
     this.result, {
     Key? key,
   }) : super(key: key);
-  List<String> result;
+  List<dynamic> result;
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -86,9 +87,9 @@ class ResultListView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
-                children: const [
-                  Text("Prenom"),
-                  Text("Nom"),
+                children: [
+                  Text(result[index]["prenomUtilisateur"].toString()),
+                  Text(result[index]["nomUtilisateur"].toString()),
                 ],
               ),
               Icon(
@@ -98,7 +99,7 @@ class ResultListView extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {},
-                child: Text("Add"),
+                child: Text("Unfollow"),
               )
             ],
           )),
@@ -110,11 +111,4 @@ class ResultListView extends StatelessWidget {
       },
     );
   }
-}
-
-Future<List<String>> computeData() async {
-  await Future.delayed(
-    const Duration(seconds: 2),
-  );
-  return ["oui"];
 }

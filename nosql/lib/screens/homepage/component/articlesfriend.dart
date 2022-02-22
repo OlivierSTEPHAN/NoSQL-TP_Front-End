@@ -1,27 +1,62 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nosql/components/placeholder.dart';
+import 'package:nosql/request/request.dart';
 
-class Articles extends StatelessWidget {
-  const Articles({
+class ArticlesFriend extends StatefulWidget {
+  ArticlesFriend({
     Key? key,
   }) : super(key: key);
+  @override
+  State<ArticlesFriend> createState() => _ArticlesFriendState();
+}
 
+class _ArticlesFriendState extends State<ArticlesFriend> {
+  int _currentIntValue = 1;
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
-      height: 1000,
-      color: Colors.grey.shade200,
-      child: FutureBuilder<List<String>>(
-        future: computeData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ResultArticle(snapshot.data!);
-          } else if (snapshot.hasError) {
-            return Text("Error");
-          }
-          return WaitingArticle();
-        },
+      height: 700,
+      color: Colors.grey[300],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.remove),
+                onPressed: () => setState(() {
+                  final newValue = _currentIntValue - 1;
+                  _currentIntValue = newValue.clamp(1, 5);
+                }),
+              ),
+              Text('Current level value: $_currentIntValue'),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => setState(() {
+                  final newValue = _currentIntValue + 1;
+                  _currentIntValue = newValue.clamp(1, 5);
+                }),
+              ),
+            ],
+          ),
+          Container(
+            child: FutureBuilder<List<String>>(
+              future: computeData(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ResultArticle(snapshot.data!);
+                } else if (snapshot.hasError) {
+                  return Text("Error");
+                }
+                return WaitingArticle();
+              },
+            ),
+            height: 660,
+          )
+        ],
       ),
     );
   }
@@ -100,11 +135,4 @@ class ResultArticle extends StatelessWidget {
       itemCount: result.length,
     );
   }
-}
-
-Future<List<String>> computeData() async {
-  await Future.delayed(
-    const Duration(seconds: 2),
-  );
-  return ["oui", "oui", "oui", "oui"];
 }

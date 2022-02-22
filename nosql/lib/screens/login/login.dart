@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nosql/request/request.dart';
 import '../homepage/homepage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -40,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   width: 500.0,
                   child: TextFormField(
+                    keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter some text';
@@ -55,20 +57,31 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextButton(
                   child: const Text("Se connecter"),
-                  onPressed: () {
+                  onPressed: () async {
+                    bool isValide =
+                        await formValidator(_controller.text.toString());
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Processing Data'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                HomePage(_controller.text.toString())),
-                      );
+                      if (isValide) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Processing Data'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  HomePage(_controller.text.toString())),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildPopupDialog(context),
+                        );
+                      }
                     }
                   },
                 ),
@@ -79,4 +92,36 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+Future<bool> formValidator(String name) async {
+  if (name.isEmpty) {
+    return false;
+  }
+  Map<String, dynamic> response = await getUserById(name);
+  if (response["error"] != null) {
+    return false;
+  }
+  return true;
+}
+
+Widget _buildPopupDialog(BuildContext context) {
+  return AlertDialog(
+    title: const Text('Error'),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const <Widget>[
+        Text("No such user in the database"),
+      ],
+    ),
+    actions: <Widget>[
+      ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text('Close'),
+      ),
+    ],
+  );
 }

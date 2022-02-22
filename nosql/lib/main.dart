@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './request/request.dart';
+
 import 'screens/login/login.dart';
 
 void main() {
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'TP NoSQL',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
