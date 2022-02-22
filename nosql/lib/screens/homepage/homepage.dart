@@ -8,8 +8,8 @@ import 'component/users.dart';
 import '../profile/user.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage(this.value);
-  final String value;
+  HomePage(this.value);
+  Map value;
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -19,14 +19,18 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.value),
+        title: Text(widget.value["prenomUtilisateur"] +
+            " " +
+            widget.value["nomUtilisateur"]),
         actions: [
           IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserProfile()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        UserProfile(widget.value["idUtilisateur"])),
               );
             },
           )
@@ -38,14 +42,14 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               const Text("List of user:"),
-              const Users(),
+              Users(widget.value["idUtilisateur"]),
               const Text("Shopping article:"),
-              const Articles(),
+              Articles(widget.value["idUtilisateur"]),
               const Text('Article parmis le niveau N des followers'),
-              ArticlesFriend(),
+              ArticlesFriend(widget.value["idUtilisateur"]),
               const Text(
                   "Article parmis le niveau N des followers sur l'article X"),
-              ArticlesFriendByArticle()
+              ArticlesFriendByArticle(widget.value["idUtilisateur"])
             ],
           ),
         ),

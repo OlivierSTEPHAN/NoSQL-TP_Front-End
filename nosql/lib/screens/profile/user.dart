@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'component/boughtarticle.dart';
 import 'component/friends.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({Key? key}) : super(key: key);
-
+  UserProfile(this.value, {Key? key}) : super(key: key);
+  String value;
   @override
   _UserProfileState createState() => _UserProfileState();
 }
@@ -26,7 +27,9 @@ class _UserProfileState extends State<UserProfile> {
           child: Column(
             children: [
               const Text("List of friend:"),
-              const Friends(),
+              Friends(widget.value),
+              const Text("Bought article : "),
+              BoughtArticles(widget.value)
             ],
           ),
         ),

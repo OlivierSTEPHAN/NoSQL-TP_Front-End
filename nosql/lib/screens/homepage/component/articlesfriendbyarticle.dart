@@ -5,9 +5,12 @@ import 'package:nosql/request/request.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 
 class ArticlesFriendByArticle extends StatefulWidget {
-  ArticlesFriendByArticle({
+  ArticlesFriendByArticle(
+    this.value, {
     Key? key,
   }) : super(key: key);
+
+  String value;
   @override
   State<ArticlesFriendByArticle> createState() =>
       _ArticlesFriendByArticleState();
@@ -16,12 +19,18 @@ class ArticlesFriendByArticle extends StatefulWidget {
 class _ArticlesFriendByArticleState extends State<ArticlesFriendByArticle> {
   int _currentIntValue = 1;
   dynamic _currentChoice = 0;
-  List<String> _choices = ["banane", "pomme", "poire", "fraise"];
-
-  showPickerModal(BuildContext context) {
+  int productId = 1;
+  showPickerModal(BuildContext context, List data) {
+    List<String> listNom = [];
+    for (var item in data) {
+      listNom.add(item["nomProduit"]);
+    }
+    List<String> listId = [];
+    for (var item in data) {
+      listId.add(item["idProduit"]);
+    }
     Picker(
-        adapter: PickerDataAdapter<String>(
-            pickerdata: const JsonDecoder().convert(jsonEncode(_choices))),
+        adapter: PickerDataAdapter<String>(pickerdata: listNom),
         hideHeader: false,
         onConfirm: (Picker picker, List value) {
           setState(() {
@@ -40,11 +49,11 @@ class _ArticlesFriendByArticleState extends State<ArticlesFriendByArticle> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            FutureBuilder(
-              future: getProduct(),
+            FutureBuilder<List<dynamic>>(
+              future: getProducts(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return productChanger(context);
+                  return productChanger(context, snapshot.data!);
                 } else if (snapshot.hasError) {
                   return Text("Error");
                 }
@@ -53,18 +62,20 @@ class _ArticlesFriendByArticleState extends State<ArticlesFriendByArticle> {
             ),
             valueChanger(),
             Container(
-              child: FutureBuilder<List<String>>(
-                future: computeData(),
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: getSpecificProductsByLevelN(
+                    int.parse(widget.value), _currentIntValue, _currentChoice),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return ResultArticle(snapshot.data!);
+                    return ResultArticle(snapshot.data!, widget.value);
                   } else if (snapshot.hasError) {
                     return Text("Error");
                   }
                   return WaitingArticle();
                 },
               ),
-              height: 660,
+              height: 300,
+              width: 300,
             )
           ],
         ),
@@ -72,11 +83,12 @@ class _ArticlesFriendByArticleState extends State<ArticlesFriendByArticle> {
     );
   }
 
-  ListTile productChanger(BuildContext context) {
+  ListTile productChanger(BuildContext context, List<dynamic> data) {
     return ListTile(
-      title: Text('Select your product : ${_choices[_currentChoice]}'),
+      title:
+          Text('Select your product : ${data[_currentChoice]["nomProduit"]}'),
       onTap: () {
-        showPickerModal(context);
+        showPickerModal(context, data);
       },
     );
   }
@@ -142,41 +154,38 @@ class WaitingArticle extends StatelessWidget {
 
 class ResultArticle extends StatelessWidget {
   ResultArticle(
-    this.result, {
+    this.result,
+    this.value, {
     Key? key,
   }) : super(key: key);
 
-  List<String> result;
-
+  Map<String, dynamic> result;
+  String value;
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 300),
-      itemBuilder: (_, index) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          height: 100,
-          color: Colors.blue[50],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text("Nom de l'article"),
-              Icon(
-                Icons.shop_2_outlined,
-                size: 50,
-                color: Colors.grey,
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text("Acheter"),
-              )
-            ],
+    return Container(
+      height: 100,
+      color: Colors.blue[50],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text("Nom"),
+          Text(result["idProduit"]),
+          Text("Acheté " + result["count"] + " fois"),
+          Icon(
+            Icons.shop_2_outlined,
+            size: 50,
+            color: Colors.grey,
           ),
-        ),
+          TextButton(
+            onPressed: () {
+              buyArticle(int.parse(value), result["idProduit"]);
+            },
+            child: Text("Acheter"),
+          )
+        ],
       ),
-      itemCount: result.length,
     );
   }
 }

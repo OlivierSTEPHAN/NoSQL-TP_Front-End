@@ -1,65 +1,29 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nosql/components/placeholder.dart';
 import 'package:nosql/request/request.dart';
 
-class ArticlesFriend extends StatefulWidget {
-  ArticlesFriend(
+class BoughtArticles extends StatelessWidget {
+  BoughtArticles(
     this.value, {
     Key? key,
   }) : super(key: key);
   String value;
   @override
-  State<ArticlesFriend> createState() => _ArticlesFriendState();
-}
-
-class _ArticlesFriendState extends State<ArticlesFriend> {
-  int _currentIntValue = 1;
-  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
       height: 700,
-      color: Colors.grey[300],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: () => setState(() {
-                  final newValue = _currentIntValue - 1;
-                  _currentIntValue = newValue.clamp(1, 5);
-                }),
-              ),
-              Text('Current level value: $_currentIntValue'),
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () => setState(() {
-                  final newValue = _currentIntValue + 1;
-                  _currentIntValue = newValue.clamp(1, 5);
-                }),
-              ),
-            ],
-          ),
-          Container(
-            child: FutureBuilder<List<dynamic>>(
-              future: getProductsByLevelN(
-                  int.parse(widget.value), _currentIntValue),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ResultArticle(snapshot.data!, widget.value);
-                } else if (snapshot.hasError) {
-                  return Text("Error");
-                }
-                return WaitingArticle();
-              },
-            ),
-            height: 660,
-          )
-        ],
+      color: Colors.grey.shade200,
+      child: FutureBuilder<List<dynamic>>(
+        future: getBoughtProducts(int.parse(value)),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ResultArticle(snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Text("Error");
+          }
+          return WaitingArticle();
+        },
       ),
     );
   }
@@ -102,11 +66,10 @@ class WaitingArticle extends StatelessWidget {
 
 class ResultArticle extends StatelessWidget {
   ResultArticle(
-    this.result,
-    this.value, {
+    this.result, {
     Key? key,
   }) : super(key: key);
-  String value;
+
   List<dynamic> result;
   @override
   Widget build(BuildContext context) {
@@ -124,7 +87,6 @@ class ResultArticle extends StatelessWidget {
             children: [
               Text(result[index]["nomProduit"]),
               Text(result[index]["prix"] + "€"),
-              Text("Acheté " + result[index]["count"].toString() + " fois"),
               Icon(
                 Icons.shop_2_outlined,
                 size: 50,
@@ -132,9 +94,9 @@ class ResultArticle extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  buyArticle(int.parse(value), result[index]["idProduit"]);
+                  unbuyArticle(1, int.parse(result[index]["idProduit"]));
                 },
-                child: Text("Acheter"),
+                child: Text("Désacheter"),
               )
             ],
           ),

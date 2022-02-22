@@ -32,28 +32,6 @@ Future<bool> computeFakeData() async {
   return true;
 }
 
-Future<List<String>> getProduct() async {
-  await Future.delayed(
-    const Duration(seconds: 2),
-  );
-  return ["banane", "pomme", "poire", "fraise"];
-}
-
-Future<List<String>> computeData() async {
-  await Future.delayed(
-    const Duration(seconds: 2),
-  );
-  Random random = Random.secure();
-  int randomInt = random.nextInt(100);
-
-  List<String> result = [];
-
-  for (int i = 0; i < randomInt; i++) {
-    result.add("oui");
-  }
-  return result;
-}
-
 Future<Map<String, dynamic>> getUserById(String id) async {
   return await getFromUrl('http://www.localhost:3000/getUserById?id=$id')
       as Map<String, dynamic>;
@@ -66,6 +44,11 @@ Future<List<dynamic>> getFriends(String id) async {
 
 Future<List<dynamic>> getProducts() async {
   return await getFromUrl('http://www.localhost:3000/getProducts')
+      as List<dynamic>;
+}
+
+Future<List<dynamic>> getBoughtProducts(int id) async {
+  return await getFromUrl('http://www.localhost:3000/getProductsBought?id=$id')
       as List<dynamic>;
 }
 
@@ -94,4 +77,17 @@ Future<List<dynamic>> follow(int id, int id2) async {
 Future<List<dynamic>> unfollow(int id, int id2) async {
   return await getFromUrl('http://www.localhost:3000/unfollow?id=$id&id2=$id2')
       as List<dynamic>;
+}
+
+Future<List<dynamic>> getProductsByLevelN(int id, int level) async {
+  return await getFromUrl(
+          'http://www.localhost:3000/getProductsByLevelN?id=$id&level=$level')
+      as List<dynamic>;
+}
+
+Future<Map<String, dynamic>> getSpecificProductsByLevelN(
+    int id, int level, int productId) async {
+  return await getFromUrl(
+          'http://www.localhost:3000/getSpecificProductByLevelN?id=$id&level=$level&productId=$productId')
+      as Map<String, dynamic>;
 }

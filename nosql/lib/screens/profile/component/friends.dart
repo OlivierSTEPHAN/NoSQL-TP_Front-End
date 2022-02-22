@@ -3,19 +3,20 @@ import 'package:nosql/components/placeholder.dart';
 import 'package:nosql/request/request.dart';
 
 class Friends extends StatelessWidget {
-  const Friends({
+  Friends(
+    this.value, {
     Key? key,
   }) : super(key: key);
-
+  String value;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
       child: FutureBuilder<List<dynamic>>(
-        future: getFriends("1"),
+        future: getFriends(value),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ResultListView(snapshot.data!);
+            return ResultListView(snapshot.data!, value);
           } else if (snapshot.hasError) {
             return Text("Error");
           }
@@ -67,17 +68,25 @@ class WaitingListView extends StatelessWidget {
   }
 }
 
-class ResultListView extends StatelessWidget {
+class ResultListView extends StatefulWidget {
   ResultListView(
-    this.result, {
+    this.result,
+    this.value, {
     Key? key,
   }) : super(key: key);
   List<dynamic> result;
+  String value;
+
+  @override
+  State<ResultListView> createState() => _ResultListViewState();
+}
+
+class _ResultListViewState extends State<ResultListView> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: result.length,
+      itemCount: widget.result.length,
       itemBuilder: (context, index) {
         return Container(
           width: 220,
@@ -88,8 +97,9 @@ class ResultListView extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Text(result[index]["prenomUtilisateur"].toString()),
-                  Text(result[index]["nomUtilisateur"].toString()),
+                  Text(widget.result[index]["prenomUtilisateur"].toString()),
+                  Text(widget.result[index]["nomUtilisateur"].toString()),
+                  Text(widget.result[index]["idUtilisateur"].toString())
                 ],
               ),
               Icon(
@@ -98,7 +108,13 @@ class ResultListView extends StatelessWidget {
                 color: Colors.grey,
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  unfollow(int.parse(widget.value),
+                      int.parse(widget.result[index]["idUtilisateur"]));
+                  setState(() {
+                    getFriends(widget.value);
+                  });
+                },
                 child: Text("Unfollow"),
               )
             ],

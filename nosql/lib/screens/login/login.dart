@@ -32,9 +32,27 @@ class _LoginPageState extends State<LoginPage> {
       child: Form(
         key: _formKey,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.school_outlined,
+                    size: 50,
+                  ),
+                  SizedBox(
+                    width: 50,
+                  ),
+                  Text(
+                    "TP NoSQL",
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ]),
             SizedBox(
-              height: 250,
+              height: 100,
             ),
             Column(
               children: [
@@ -58,10 +76,9 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   child: const Text("Se connecter"),
                   onPressed: () async {
-                    bool isValide =
-                        await formValidator(_controller.text.toString());
+                    Map res = await formValidator(_controller.text.toString());
                     if (_formKey.currentState!.validate()) {
-                      if (isValide) {
+                      if (res["status"] == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Processing Data'),
@@ -72,8 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  HomePage(_controller.text.toString())),
+                              builder: (context) => HomePage(res)),
                         );
                       } else {
                         showDialog(
@@ -94,15 +110,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-Future<bool> formValidator(String name) async {
+Future<Map> formValidator(String name) async {
   if (name.isEmpty) {
-    return false;
+    return {"status": false};
   }
-  Map<String, dynamic> response = await getUserById(name);
+  Map response = await getUserById(name);
   if (response["error"] != null) {
-    return false;
+    return {"status": false};
   }
-  return true;
+  return response;
 }
 
 Widget _buildPopupDialog(BuildContext context) {

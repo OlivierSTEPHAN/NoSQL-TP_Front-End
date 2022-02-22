@@ -3,10 +3,11 @@ import 'package:nosql/components/placeholder.dart';
 import 'package:nosql/request/request.dart';
 
 class Users extends StatelessWidget {
-  const Users({
+  Users(
+    this.value, {
     Key? key,
   }) : super(key: key);
-
+  String value;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -15,7 +16,7 @@ class Users extends StatelessWidget {
         future: getUsers(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ResultListView(snapshot.data!);
+            return ResultListView(snapshot.data!, value);
           } else if (snapshot.hasError) {
             return Text("Error");
           }
@@ -69,10 +70,12 @@ class WaitingListView extends StatelessWidget {
 
 class ResultListView extends StatelessWidget {
   ResultListView(
-    this.result, {
+    this.result,
+    this.value, {
     Key? key,
   }) : super(key: key);
   List<dynamic> result;
+  String value;
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -90,6 +93,7 @@ class ResultListView extends StatelessWidget {
                 children: [
                   Text(result[index]["prenomUtilisateur"]),
                   Text(result[index]["nomUtilisateur"]),
+                  Text(result[index]["idUtilisateur"])
                 ],
               ),
               Icon(
@@ -98,7 +102,12 @@ class ResultListView extends StatelessWidget {
                 color: Colors.grey,
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  print(
+                      value + " " + result[index]["idUtilisateur"].toString());
+                  follow(int.parse(value),
+                      int.parse(result[index]["idUtilisateur"]));
+                },
                 child: Text("Add"),
               )
             ],

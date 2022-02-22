@@ -3,10 +3,11 @@ import 'package:nosql/components/placeholder.dart';
 import 'package:nosql/request/request.dart';
 
 class Articles extends StatelessWidget {
-  const Articles({
+  Articles(
+    this.value, {
     Key? key,
   }) : super(key: key);
-
+  String value;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -17,7 +18,7 @@ class Articles extends StatelessWidget {
         future: getProducts(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ResultArticle(snapshot.data!);
+            return ResultArticle(snapshot.data!, value);
           } else if (snapshot.hasError) {
             return Text("Error");
           }
@@ -65,10 +66,11 @@ class WaitingArticle extends StatelessWidget {
 
 class ResultArticle extends StatelessWidget {
   ResultArticle(
-    this.result, {
+    this.result,
+    this.value, {
     Key? key,
   }) : super(key: key);
-
+  String value;
   List<dynamic> result;
   @override
   Widget build(BuildContext context) {
@@ -93,7 +95,8 @@ class ResultArticle extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  buyArticle(1, int.parse(result[index]["idProduit"]));
+                  buyArticle(
+                      int.parse(value), int.parse(result[index]["idProduit"]));
                 },
                 child: Text("Acheter"),
               )
